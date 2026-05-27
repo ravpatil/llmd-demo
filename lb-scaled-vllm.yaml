@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama-vllm-scaled-lb
+spec:
+  type: ClusterIP
+  selector:
+    serving.kserve.io/inferenceservice: llama-vllm-scaled
+  ports:
+    - port: 8000
+      targetPort: 8000

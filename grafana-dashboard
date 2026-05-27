@@ -1,0 +1,2 @@
+route=$(oc get route grafana-route -n grafana -ojsonpath='{.status.ingress[0].host}')
+echo "https://$route/d/llm-performance/llm-d-performance-dashboard"
