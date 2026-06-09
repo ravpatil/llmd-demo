@@ -20,15 +20,17 @@ spec:
   - args:
     - "-c"
     - | 
-      wget -O /tmp/cloudex "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1" && \
+      wget https://download.cloudexe.tech/downloads/cloudexe -O /tmp/cloudex && \
       chmod +x /tmp/cloudexe && \
-      export CLOUDEXE_NVIDIA_VERSION="" && \
-      export CLOUDEXE_APIKEY="eyJleHBpcnlfZGF0ZSI6IjIwMjYtMDctMDkgMDM6MTc6MDAiLCJ1c2VyaWQiOiI0Njc5ZDYyNi1jZTc5LTQ2ZmItOGI5Mi0zYTQ5ZDliYTEzY2QifQ==.TCl6gcGAPxEkShCVRziN5dwoIZ_J1SsnMw-g47k9_YA=" && \
-      /tmp/cloudex --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
+      /tmp/cloudex --inbound_ports 8001 --envname redhat_demo --gpuspec L40S -- \
       /opt/app-root/bin/python3 \
       -m vllm.entrypoints.openai.api_server \ 
       --model /mnt/models \
-      --port 8000 --download-dir /models-cache --max-model-len 4096 --served-model-name={{.Name}}
+      --port 8001 --download-dir /models-cache --max-model-len 4096
+    - --model=/mnt/models
+    - --served-model-name={{.Name}}
+    - --max-model-len=16000
+    - --disable-uvicorn-access-log
     command: ["/bin/bash"]
     env:
     - name: HF_HOME
