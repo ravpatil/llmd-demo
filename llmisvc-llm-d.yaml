@@ -12,7 +12,7 @@ spec:
   replicas: 4
   model:
     uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5
-    name: llama-3-1-8b-instruct-fp8
+    name: llama-llm-d
   router:
     scheduler:
       template:
