@@ -22,15 +22,18 @@ spec:
     - | 
       wget -O /tmp/cloudex "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1" && \
       chmod +x /tmp/cloudexe && \
-      export CLOUDEXE_NVIDIA_VERSION="" && \
-      export CLOUDEXE_APIKEY="eyJleHBpcnlfZGF0ZSI6IjIwMjYtMDctMDkgMDM6MTc6MDAiLCJ1c2VyaWQiOiI0Njc5ZDYyNi1jZTc5LTQ2ZmItOGI5Mi0zYTQ5ZDliYTEzY2QifQ==.TCl6gcGAPxEkShCVRziN5dwoIZ_J1SsnMw-g47k9_YA=" && \
-      /tmp/cloudex --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
+      sleep infinity && \
+      /tmp/cloudexe --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
       /opt/app-root/bin/python3 \
       -m vllm.entrypoints.openai.api_server \ 
       --model /mnt/models \
       --port 8000 --download-dir /models-cache --max-model-len 4096 --served-model-name={{.Name}}
     command: ["/bin/bash"]
     env:
+    - name: CLOUDEXE_NVIDIA_VERSION
+      value: ""
+    - name: CLOUDEXE_APIKEY
+      value: "API_KEY_HERE"
     - name: HF_HOME
       value: /tmp/hf_home
     - name: HF_HUB_OFFLINE
