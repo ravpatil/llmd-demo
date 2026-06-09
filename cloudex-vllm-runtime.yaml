@@ -7,8 +7,8 @@ metadata:
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/runtime-version: v3.2.4
     opendatahub.io/serving-runtime-scope: global
-    openshift.io/display-name: RHAIIS (vLLM) NVIDIA GPU ServingRuntime - Cloudexe GPU
-    openshift.io/template-display-name: RHAIIS (vLLM) NVIDIA GPU ServingRuntime for KServe
+    openshift.io/display-name: vLLM NVIDIA GPU ServingRuntime with GPUs from Cloudexe Hyberbridge Technology
+    openshift.io/template-display-name: vLLM NVIDIA GPU from Cloudexe ServingRuntime for KServe
     opendatahub.io/template-name: rhaiis-cuda-template
   labels:
     opendatahub.io/dashboard: "true"
