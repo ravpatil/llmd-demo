@@ -20,7 +20,7 @@ spec:
   - args:
     - "-c"
     - | 
-      wget -O /tmp/cloudex "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1" && \
+      wget -O /tmp/cloudexe "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1" && \
       chmod +x /tmp/cloudexe && \
       sleep infinity && \
       /tmp/cloudexe --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
