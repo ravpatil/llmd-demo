@@ -105,11 +105,7 @@ spec:
             echo "Model is copied successfully"
             chmod +x /tmp/cloudexe
             chmod 777 /mnt/models1
-            exec /tmp/cloudexe --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
-              /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server \
-              --model /mnt/models1 --port 8000 --max-model-len 4096 \
-              --disable-uvicorn-access-log \
-              --served-model-name=llama-llm-d-cloudexe
+            exec /tmp/cloudexe --inbound_ports 8000 --gpuspec L40Sx1 -- /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server --model /mnt/models1 --port 8000 --max-model-len 16000 --served-model-name=llama-llm-d-cloudexe
         env:
           - name: CLOUDEXE_NVIDIA_VERSION
             value: ""
