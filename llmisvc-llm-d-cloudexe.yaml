@@ -108,7 +108,7 @@ spec:
             chmod 777 /mnt/models1
             exec /tmp/cloudexe --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
               /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server \
-              --model /mnt/models1 --port 8000 --max-model-len 4096 \
+              --model /mnt/models1 --port 8000 --max-model-len 16000 \
               --ssl-keyfile /var/run/kserve/tls/tls.key \
               --ssl-certfile /var/run/kserve/tls/tls.crt \
               --disable-uvicorn-access-log \
