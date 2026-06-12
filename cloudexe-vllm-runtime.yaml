@@ -31,10 +31,10 @@ spec:
       ls /tmp/cloudexe
       date
       echo "Model copy started"
-      cp -r /mnt/models/ /mnt/models1/
       date
       while [ ! -f /mnt/models1/config.json ]; do
         echo "Waiting for model to be mounted..."
+        cp -r /mnt/models/ /mnt/models1/
         sleep 10
       done
       echo "Model is copied successfully"
