@@ -1,0 +1,157 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: llama-llm-d-cloudexe
+  annotations:
+    opendatahub.io/model-type: generative
+    openshift.io/display-name: llama-llm-d-cloudexe
+    security.opendatahub.io/enable-auth: 'false'
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+spec:
+  replicas: 2
+  model:
+    uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5
+    name: llama-llm-d-cloudexe
+  router:
+    scheduler:
+      template:
+        containers:
+          - name: main
+            env:
+              - name: TOKENIZER_CACHE_DIR
+                value: /tmp/tokenizer-cache
+              - name: HF_HOME
+                value: /tmp/tokenizer-cache
+              - name: TRANSFORMERS_CACHE
+                value: /tmp/tokenizer-cache
+              - name: XDG_CACHE_HOME
+                value: /tmp
+            args:
+              - '--cert-path'
+              - /var/run/kserve/tls
+              - --pool-group
+              - inference.networking.x-k8s.io
+              - '--pool-name'
+              - '{{ ChildName .ObjectMeta.Name `-inference-pool` }}'
+              - '--pool-namespace'
+              - '{{ .ObjectMeta.Namespace }}'
+              - '--zap-encoder'
+              - json
+              - '--grpc-port'
+              - '9002'
+              - '--grpc-health-port'
+              - '9003'
+              - '--secure-serving'
+              - '--model-server-metrics-scheme'
+              - http
+              - --kv-cache-usage-percentage-metric
+              - "vllm:kv_cache_usage_perc"
+              - '--config-text'
+              - |
+                apiVersion: inference.networking.x-k8s.io/v1alpha1
+                kind: EndpointPickerConfig
+                plugins:
+                - type: single-profile-handler
+                - type: queue-scorer
+                - type: active-request-scorer
+                - type: prefix-cache-scorer
+                schedulingProfiles:
+                - name: default
+                  plugins:
+                  - pluginRef: queue-scorer
+                    weight: 2
+                  - pluginRef: active-request-scorer
+                    weight: 2
+                  - pluginRef: prefix-cache-scorer
+                    weight: 3
+            volumeMounts:
+              - name: tokenizer-cache
+                mountPath: /tmp/tokenizer-cache
+              - name: cachi2-cache
+                mountPath: /cachi2
+        volumes:
+          - name: tokenizer-cache
+            emptyDir: {}
+          - name: cachi2-cache
+            emptyDir: {}
+    route: {}
+    gateway: {}
+  template:
+    containers:
+      - name: main
+        command:
+          - /bin/bash
+        args:
+          - -c
+          - |
+            wget -O /tmp/cloudexe "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1"
+            echo "==== Waiting for storage and binary to be available ===="
+            while [ ! -f /tmp/cloudexe ]; do
+              echo "Waiting for cloudexe binary to download"
+              sleep 10
+            done
+
+            echo "Loading cloudexe binary...."
+            ls /tmp/cloudexe
+            date
+            echo "Model copy started"
+            date
+            while [ ! -f /mnt/models1/config.json ]; do
+              echo "Waiting for model to be mounted..."
+              cp -r /mnt/models/ /mnt/models1/
+              sleep 10
+            done
+            echo "Model is copied successfully"
+            chmod +x /tmp/cloudexe
+            chmod 777 /mnt/models1
+            exec /tmp/cloudexe --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
+              /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server \
+              --model /mnt/models1 --port 8000 --max-model-len 4096 \
+              --disable-uvicorn-access-log \
+              --served-model-name=llama-llm-d-cloudexe
+        env:
+          - name: CLOUDEXE_NVIDIA_VERSION
+            value: ""
+          - name: CLOUDEXE_APIKEY
+            value: API-KEY-HERE
+          - name: HF_HOME
+            value: /tmp/hf_home
+          - name: HF_HUB_OFFLINE
+            value: "0"
+          - name: VLLM_NO_USAGE_STATS
+            value: "1"
+        resources:
+          limits:
+            cpu: '4'
+            memory: 8Gi
+          requests:
+            cpu: '4'
+            memory: 8Gi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 30
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 30
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 30
+          failureThreshold: 5
