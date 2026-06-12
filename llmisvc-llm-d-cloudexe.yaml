@@ -7,7 +7,7 @@ metadata:
     openshift.io/display-name: llama-llm-d-cloudexe
     security.opendatahub.io/enable-auth: 'false'
     prometheus.io/path: /metrics
-    prometheus.io/port: "8080"
+    prometheus.io/port: "8000"
 spec:
   replicas: 2
   model:
@@ -127,7 +127,7 @@ spec:
         startupProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8000
             scheme: HTTP
           initialDelaySeconds: 120
           periodSeconds: 30
@@ -136,7 +136,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8000
             scheme: HTTP
           initialDelaySeconds: 120
           periodSeconds: 30
@@ -145,7 +145,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8000
             scheme: HTTP
           initialDelaySeconds: 120
           periodSeconds: 30
