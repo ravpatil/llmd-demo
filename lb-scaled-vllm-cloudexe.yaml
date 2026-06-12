@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama-cloudexe-direct-lb
+  namespace: llm-d-project
+  labels:
+    app: llama-cloudexe-direct-lb
+spec:
+  type: LoadBalancer
+  publishNotReadyAddresses: true   # IMPORTANT: include 1/2 Ready pods
+  selector:
+    serving.kserve.io/inferenceservice: llama-cloudexe-scaled
+    component: predictor
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

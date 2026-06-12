@@ -15,7 +15,7 @@ metadata:
 spec:
   annotations:
     prometheus.io/path: /metrics
-    prometheus.io/port: "8000"
+    prometheus.io/port: "8080"
   containers:
   - args:
     - "-c"
