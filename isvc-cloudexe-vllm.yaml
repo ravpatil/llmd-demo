@@ -23,10 +23,8 @@ spec:
         limits:
           cpu: '4'
           memory: 8Gi
-          nvidia.com/gpu: '1'
         requests:
           cpu: '4'
           memory: 8Gi
-          nvidia.com/gpu: '1'
       runtime: rhaiis-cuda-cloudexe
       storageUri: 'oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5'
