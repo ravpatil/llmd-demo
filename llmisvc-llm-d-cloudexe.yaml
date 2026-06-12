@@ -2,6 +2,7 @@ apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
   name: llama-llm-d-cloudexe
+  namespace: llm-d-project
   annotations:
     opendatahub.io/model-type: generative
     openshift.io/display-name: llama-llm-d-cloudexe
@@ -9,7 +10,7 @@ metadata:
     prometheus.io/path: /metrics
     prometheus.io/port: "8000"
 spec:
-  replicas: 2
+  replicas: 1
   model:
     uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5
     name: llama-llm-d-cloudexe
@@ -44,7 +45,7 @@ spec:
               - '9003'
               - '--secure-serving'
               - '--model-server-metrics-scheme'
-              - http
+              - https
               - --kv-cache-usage-percentage-metric
               - "vllm:kv_cache_usage_perc"
               - '--config-text'
@@ -105,12 +106,18 @@ spec:
             echo "Model is copied successfully"
             chmod +x /tmp/cloudexe
             chmod 777 /mnt/models1
-            exec /tmp/cloudexe --inbound_ports 8000 --gpuspec L40Sx1 -- /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server --model /mnt/models1 --port 8000 --max-model-len 16000 --served-model-name=llama-llm-d-cloudexe
+            exec /tmp/cloudexe --inbound_ports 8000 --envname redhat_demo --gpuspec L40Sx1 -- \
+              /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server \
+              --model /mnt/models1 --port 8000 --max-model-len 4096 \
+              --ssl-keyfile /var/run/kserve/tls/tls.key \
+              --ssl-certfile /var/run/kserve/tls/tls.crt \
+              --disable-uvicorn-access-log \
+              --served-model-name=llama-llm-d-cloudexe
         env:
           - name: CLOUDEXE_NVIDIA_VERSION
             value: ""
           - name: CLOUDEXE_APIKEY
-            value: API-KEY-HERE
+            value: "API_KEY_HERE"
           - name: HF_HOME
             value: /tmp/hf_home
           - name: HF_HUB_OFFLINE
@@ -122,31 +129,31 @@ spec:
             cpu: '4'
             memory: 8Gi
           requests:
-            cpu: '4'
+            cpu: '2'
             memory: 8Gi
         startupProbe:
           httpGet:
             path: /health
             port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 120
+            scheme: HTTPS
+          initialDelaySeconds: 180
           periodSeconds: 30
           timeoutSeconds: 30
-          failureThreshold: 10
+          failureThreshold: 20
         readinessProbe:
           httpGet:
             path: /health
             port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 120
+            scheme: HTTPS
+          initialDelaySeconds: 180
           periodSeconds: 30
           timeoutSeconds: 30
-          failureThreshold: 5
+          failureThreshold: 10
         livenessProbe:
           httpGet:
             path: /health
             port: 8000
-            scheme: HTTP
+            scheme: HTTPS
           initialDelaySeconds: 120
           periodSeconds: 30
           timeoutSeconds: 30
