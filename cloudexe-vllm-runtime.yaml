@@ -40,7 +40,7 @@ spec:
       echo "Model is copied successfully"
       chmod +x /tmp/cloudexe
       chmod 777 /mnt/models1
-      exec /tmp/cloudexe --gpuspec L40Sx1 -- /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server --model /mnt/models1 --port 8000 --max-model-len 4096  
+      exec /tmp/cloudexe --inbound_ports 8000 --gpuspec L40Sx1 -- /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server --model /mnt/models1 --port 8000 --max-model-len 4096  
     command: ["/bin/bash"]
     env:
     - name: CLOUDEXE_NVIDIA_VERSION
