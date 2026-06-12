@@ -19,13 +19,28 @@ spec:
   containers:
   - args:
     - "-c"
-    - | 
-      wget -O /tmp/cloudexe "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1" && \
-      chmod +x /tmp/cloudexe && \
-      cp -r /mnt/models/ /mnt/models1/ && \
-      chmod 777 /mnt/models1 && \
-      sleep infinity && \
-      /tmp/cloudexe --gpuspec L40Sx1 -- /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server --model /mnt/models1 --port 8000 --max-model-len 4096 
+    - |
+      wget -O /tmp/cloudexe "https://cloudexetech-my.sharepoint.com/:u:/g/personal/makarand_cloudexe_tech/IQC860S6UJlpSq_J7lQeRjEbAULLW7_IExOo40onnJRZKpw?e=KmjK7l&download=1"
+      echo "==== Waiting for storage and binary to be available ===="
+      while [ ! -f /tmp/cloudexe ]; do
+        echo "Waiting for cloudexe binary to download"
+        sleep 10
+      done
+
+      echo "Loading cloudexe binary...."
+      ls /tmp/cloudexe
+      date
+      echo "Model copy started"
+      cp -r /mnt/models/ /mnt/models1/
+      date
+      while [ ! -f /mnt/models1/config.json ]; do
+        echo "Waiting for model to be mounted..."
+        sleep 10
+      done
+      echo "Model is copied successfully"
+      chmod +x /tmp/cloudexe
+      chmod 777 /mnt/models1
+      exec /tmp/cloudexe --gpuspec L40Sx1 -- /opt/app-root/bin/python3 -m vllm.entrypoints.openai.api_server --model /mnt/models1 --port 8000 --max-model-len 4096  
     command: ["/bin/bash"]
     env:
     - name: CLOUDEXE_NVIDIA_VERSION
