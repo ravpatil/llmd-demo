@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: llama-cloudexe-scaled
+  name: llama-vllm-scaled-cloudexe
   namespace: llm-d-project
   annotations:
     openshift.io/display-name: Llama 3.1 8B FP8 Scaled (Cloudexe)
